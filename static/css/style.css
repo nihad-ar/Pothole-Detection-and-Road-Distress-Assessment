@@ -1,0 +1,38 @@
+/* Custom styles for ForensiCV Studio */
+
+.nav-tab.active {
+  background-color: #0f766e;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.25);
+}
+
+.sample-pill.active {
+  border-color: rgba(20, 184, 166, 0.6);
+  background-color: rgba(20, 184, 166, 0.15);
+  color: #5eead4;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Range input accent */
+input[type="range"] {
+  accent-color: #14b8a6;
+}
+
