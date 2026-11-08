@@ -1,38 +1,247 @@
-/* Custom styles for ForensiCV Studio */
+/*
+ * RoadScan AI - Unslopped Design System
+ * Direction:
+ *   Product: Automated civil infrastructure pavement distress assessment system.
+ *   Character: Precise, technical, calm. Industrial-grade diagnostic instrument.
+ *   World: Asphalt aggregate, surveyor levels, road core samples, zinc galvanized hardware, graphite neutrals.
+ *   Moments: Road Surface Diagnostic Map & 6-Stage Computer Vision Pipeline Inspector.
+ *   Signature: Technical status badge with hairline border and tabular mono coordinates/dimensions.
+ * Grounded in Damir Sokolovsky's unslop methodology (CC-BY-4.0).
+ */
 
-.nav-tab.active {
-  background-color: #0f766e;
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.25);
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg-deep: #0f0f10;
+  --bg-page: #141415;
+  --bg-card: #19191b;
+  --bg-raised: #232325;
+  --bg-hover: #2a2a2e;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(255, 255, 255, 0.16);
+  --border-focus: rgba(255, 255, 255, 0.28);
+  --text-primary: #ededed;
+  --text-secondary: #a1a1a6;
+  --text-muted: #85858b;
+  --accent: #d97706; /* Industrial amber */
+  --accent-soft: rgba(217, 119, 6, 0.12);
+  --accent-text: #f59e0b;
+  --positive: #4cc38a;
+  --negative: #e5484d;
+  --radius-outer: 12px;
+  --radius-inner: 8px;
+  --radius-control: 6px;
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.sample-pill.active {
-  border-color: rgba(20, 184, 166, 0.6);
-  background-color: rgba(20, 184, 166, 0.15);
-  color: #5eead4;
+* {
+  box-sizing: border-box;
 }
 
-/* Custom scrollbars */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-mono, code, pre, .mono-data, .tabular-nums {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-feature-settings: "tnum" 1, "zero" 1;
+}
+
+/* Hairline panels with nested radius */
+.panel-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-outer);
+}
+
+.panel-raised {
+  background-color: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-inner);
+}
+
+/* Buttons with tactile feedback and zero AI glow */
+.btn-primary {
+  background-color: #ededed;
+  color: #0f0f10;
+  font-weight: 500;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  padding: 6px 14px;
+  font-size: 13px;
+  line-height: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: opacity 120ms var(--ease-standard), transform 120ms var(--ease-standard);
+}
+
+.btn-primary:hover {
+  opacity: 0.92;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  background-color: var(--bg-raised);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  font-weight: 500;
+  border-radius: var(--radius-control);
+  padding: 6px 14px;
+  font-size: 13px;
+  line-height: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: background-color 120ms var(--ease-standard), border-color 120ms var(--ease-standard), transform 120ms var(--ease-standard);
+}
+
+.btn-secondary:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--border-active);
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
+/* Sample select pills (deliberate 6px radius, no pills) */
+.pill-item {
+  background-color: var(--bg-raised);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 120ms var(--ease-standard);
+}
+
+.pill-item:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-active);
+}
+
+.pill-item.active {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-focus);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Hairline technical tags */
+.tech-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 500;
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-raised);
+  color: var(--text-secondary);
+}
+
+/* Status variants */
+.status-good {
+  background-color: rgba(76, 195, 138, 0.08);
+  border-color: rgba(76, 195, 138, 0.25);
+  color: #4cc38a;
+}
+
+.status-fair {
+  background-color: rgba(217, 119, 6, 0.1);
+  border-color: rgba(217, 119, 6, 0.25);
+  color: #f59e0b;
+}
+
+.status-poor {
+  background-color: rgba(229, 72, 77, 0.1);
+  border-color: rgba(229, 72, 77, 0.25);
+  color: #e5484d;
+}
+
+/* Dropdown select */
+select.select-custom {
+  background-color: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  border-radius: var(--radius-control);
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 16px;
+  outline: none;
+  transition: border-color 120ms var(--ease-standard);
+}
+
+select.select-custom:focus {
+  border-color: var(--border-focus);
+}
+
+/* Minimal industrial range slider */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: #ededed;
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  transition: transform 100ms var(--ease-standard);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+/* Discreet scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #020617;
+  background: var(--bg-deep);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 9999px;
+  background: var(--bg-raised);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: var(--bg-hover);
 }
-
-/* Range input accent */
-input[type="range"] {
-  accent-color: #14b8a6;
-}
-

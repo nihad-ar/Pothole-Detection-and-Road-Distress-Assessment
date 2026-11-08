@@ -1,4 +1,4 @@
-// RoadScan AI - Client Controller (Connected to Input Images/ Dataset)
+// RoadScan AI - Client Controller (Unslopped Industrial System)
 document.addEventListener("DOMContentLoaded", () => {
   if (window.lucide) {
     window.lucide.createIcons();
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const actionRecommendationEl = document.getElementById("actionRecommendation");
   const potholeListEl = document.getElementById("potholeList");
 
-  // Stages
+  // Pipeline Stages
   const stage1Img = document.getElementById("stage1Img");
   const stage2Img = document.getElementById("stage2Img");
   const stage3Img = document.getElementById("stage3Img");
@@ -55,35 +55,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Slider event listeners
   paramClahe.addEventListener("input", (e) => {
-    valClahe.textContent = e.target.value;
+    valClahe.textContent = parseFloat(e.target.value).toFixed(1);
     state.clahe_clip = parseFloat(e.target.value);
   });
   paramClahe.addEventListener("change", () => runInspection());
 
   paramGamma.addEventListener("input", (e) => {
-    valGamma.textContent = e.target.value;
+    valGamma.textContent = parseFloat(e.target.value).toFixed(2);
     state.gamma = parseFloat(e.target.value);
   });
   paramGamma.addEventListener("change", () => runInspection());
 
   paramCanny.addEventListener("input", (e) => {
-    const val = parseInt(e.target.value);
+    const val = parseInt(e.target.value, 10);
     valCanny.textContent = `${val} - ${val * 3}`;
     state.canny1 = val;
   });
   paramCanny.addEventListener("change", () => runInspection());
 
   paramArea.addEventListener("input", (e) => {
-    valArea.textContent = e.target.value;
-    state.min_area = parseInt(e.target.value);
+    valArea.textContent = `${parseInt(e.target.value, 10)} px`;
+    state.min_area = parseInt(e.target.value, 10);
   });
   paramArea.addEventListener("change", () => runInspection());
 
   // Rescan Folder Button
   rescanFolderBtn.addEventListener("click", () => {
-    rescanFolderBtn.classList.add("animate-pulse");
+    rescanFolderBtn.style.opacity = "0.6";
     loadDatasetImages().finally(() => {
-      rescanFolderBtn.classList.remove("animate-pulse");
+      rescanFolderBtn.style.opacity = "1";
     });
   });
 
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       state.totalCount = data.total_count || 0;
 
-      datasetSourceBadge.textContent = `Folder: Input Images/ (${state.totalCount.toLocaleString()} images)`;
+      datasetSourceBadge.textContent = `Input Images/ (${state.totalCount.toLocaleString()} photos)`;
 
       // Render Featured Pills
       featuredPillsContainer.innerHTML = "";
@@ -103,17 +103,14 @@ document.addEventListener("DOMContentLoaded", () => {
       featured.forEach((img, idx) => {
         const btn = document.createElement("button");
         const isActive = (state.currentSample === img.filename) || (!state.currentSample && idx === 0);
-        btn.className = isActive
-          ? "sample-pill active px-3 py-1.5 text-xs rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-300 flex items-center gap-1.5 transition font-semibold"
-          : "sample-pill px-3 py-1.5 text-xs rounded-xl border border-slate-800 bg-slate-800/60 text-slate-300 hover:bg-slate-800 flex items-center gap-1.5 transition";
+        btn.className = isActive ? "pill-item active" : "pill-item";
         btn.dataset.sample = img.filename;
-        btn.innerHTML = `<span>🇮🇳</span> <span>${img.label}</span>`;
+        // Clean text label, no emoji slop
+        btn.innerHTML = `<span>${img.label}</span>`;
 
         btn.addEventListener("click", () => {
-          document.querySelectorAll(".sample-pill").forEach(p => {
-            p.className = "sample-pill px-3 py-1.5 text-xs rounded-xl border border-slate-800 bg-slate-800/60 text-slate-300 hover:bg-slate-800 flex items-center gap-1.5 transition";
-          });
-          btn.className = "sample-pill active px-3 py-1.5 text-xs rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-300 flex items-center gap-1.5 transition font-semibold";
+          document.querySelectorAll(".pill-item").forEach(p => p.classList.remove("active"));
+          btn.classList.add("active");
           datasetDropdown.value = "";
 
           state.currentSample = img.filename;
@@ -129,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       // Render Dataset Dropdown
-      datasetDropdown.innerHTML = `<option value="">Select from Dataset (${(data.dataset_sample || []).length} available)...</option>`;
+      datasetDropdown.innerHTML = `<option value="">Select from dataset (${(data.dataset_sample || []).length} available)...</option>`;
       const datasetSamples = data.dataset_sample || [];
       datasetSamples.forEach(img => {
         const opt = document.createElement("option");
@@ -140,9 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       datasetDropdown.addEventListener("change", (e) => {
         if (!e.target.value) return;
-        document.querySelectorAll(".sample-pill").forEach(p => {
-          p.className = "sample-pill px-3 py-1.5 text-xs rounded-xl border border-slate-800 bg-slate-800/60 text-slate-300 hover:bg-slate-800 flex items-center gap-1.5 transition";
-        });
+        document.querySelectorAll(".pill-item").forEach(p => p.classList.remove("active"));
         state.currentSample = e.target.value;
         state.customImageData = null;
         runInspection();
@@ -153,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (err) {
       console.error("Failed to load dataset images:", err);
-      datasetSourceBadge.textContent = "Folder: Input Images/ (Error loading)";
+      datasetSourceBadge.textContent = "Input Images/ (Offline)";
     }
   }
 
@@ -180,9 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.onload = (event) => {
       state.customImageData = event.target.result;
       state.currentSample = file.name;
-      document.querySelectorAll(".sample-pill").forEach(p => {
-        p.className = "sample-pill px-3 py-1.5 text-xs rounded-xl border border-slate-800 bg-slate-800/60 text-slate-300 hover:bg-slate-800 flex items-center gap-1.5 transition";
-      });
+      document.querySelectorAll(".pill-item").forEach(p => p.classList.remove("active"));
       runInspection();
     };
     reader.readAsDataURL(file);
@@ -198,16 +191,22 @@ document.addEventListener("DOMContentLoaded", () => {
       video.play();
 
       const modal = document.createElement("div");
-      modal.className = "fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4";
+      modal.className = "fixed inset-0 bg-[#0f0f10]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4";
       modal.innerHTML = `
-        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4 max-w-lg w-full">
-          <h3 class="text-sm font-bold text-white flex items-center gap-2">
-            <i data-lucide="camera" class="w-4 h-4 text-amber-400"></i> Capture Road Pavement Snapshot
-          </h3>
-          <div id="videoContainer" class="aspect-video bg-black rounded-xl overflow-hidden flex items-center justify-center"></div>
-          <div class="flex justify-end gap-2">
-            <button id="cancelWebcam" class="px-4 py-2 bg-slate-800 text-slate-300 text-xs rounded-xl hover:bg-slate-700">Cancel</button>
-            <button id="snapWebcam" class="px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded-xl hover:bg-amber-500">Capture & Inspect</button>
+        <div class="panel-card p-6 space-y-4 max-w-lg w-full">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-medium text-[#ededed] flex items-center gap-2">
+              <i data-lucide="camera" class="w-4 h-4 text-[#85858b]"></i>
+              <span>Capture road pavement photo</span>
+            </h3>
+            <button id="closeWebcamX" class="text-[#85858b] hover:text-[#ededed]">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <div id="videoContainer" class="aspect-video bg-[#0f0f10] rounded-lg overflow-hidden flex items-center justify-center border border-white/[0.08]"></div>
+          <div class="flex justify-end gap-2 pt-2">
+            <button id="cancelWebcam" class="btn-secondary">Cancel</button>
+            <button id="snapWebcam" class="btn-primary">Capture & inspect</button>
           </div>
         </div>
       `;
@@ -215,10 +214,13 @@ document.addEventListener("DOMContentLoaded", () => {
       modal.querySelector("#videoContainer").appendChild(video);
       if (window.lucide) window.lucide.createIcons();
 
-      modal.querySelector("#cancelWebcam").addEventListener("click", () => {
+      const cleanup = () => {
         stream.getTracks().forEach(t => t.stop());
         modal.remove();
-      });
+      };
+
+      modal.querySelector("#cancelWebcam").addEventListener("click", cleanup);
+      modal.querySelector("#closeWebcamX").addEventListener("click", cleanup);
 
       modal.querySelector("#snapWebcam").addEventListener("click", () => {
         const canvas = document.createElement("canvas");
@@ -228,8 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         state.customImageData = canvas.toDataURL("image/jpeg");
         state.currentSample = "webcam_snapshot.jpg";
-        stream.getTracks().forEach(t => t.stop());
-        modal.remove();
+        cleanup();
         runInspection();
       });
     } catch (err) {
@@ -260,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       if (data.error) {
-        alert("Inspection Error: " + data.error);
+        alert("Inspection error: " + data.error);
         return;
       }
 
@@ -274,28 +275,22 @@ document.addEventListener("DOMContentLoaded", () => {
       const m = data.metrics;
       pciScoreEl.textContent = m.pci_score;
 
-      // Badge Styling
+      // Rating badge styling with unslopped status classes
       pciRatingBadge.textContent = m.condition_rating;
-      if (m.pci_score >= 88) {
-        pciRatingBadge.className = "inline-block mt-2 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
-        pciScoreEl.className = "text-3xl font-extrabold text-emerald-400";
-      } else if (m.pci_score >= 68) {
-        pciRatingBadge.className = "inline-block mt-2 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-500/10 text-teal-400 border border-teal-500/20";
-        pciScoreEl.className = "text-3xl font-extrabold text-teal-400";
-      } else if (m.pci_score >= 42) {
-        pciRatingBadge.className = "inline-block mt-2 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20";
-        pciScoreEl.className = "text-3xl font-extrabold text-amber-400";
+      if (m.pci_score >= 85) {
+        pciRatingBadge.className = "tech-tag status-good";
+      } else if (m.pci_score >= 60) {
+        pciRatingBadge.className = "tech-tag status-fair";
       } else {
-        pciRatingBadge.className = "inline-block mt-2 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20";
-        pciScoreEl.className = "text-3xl font-extrabold text-rose-400";
+        pciRatingBadge.className = "tech-tag status-poor";
       }
 
       potholeCountEl.textContent = m.pothole_count;
       potholeAreaText.textContent = `Area: ${m.total_pothole_area_px.toLocaleString()} px² (${m.pothole_coverage_pct}%)`;
 
       crackDensityEl.textContent = `${m.crack_density_pct} %`;
-      fatigueStatusText.textContent = m.is_fatigue_alligator ? "Fatigue: Alligator Cracking" : "Fatigue: Normal / Intact";
-      fatigueStatusText.className = m.is_fatigue_alligator ? "text-xs text-rose-400 font-semibold mt-1" : "text-xs text-slate-400 mt-1";
+      fatigueStatusText.textContent = m.is_fatigue_alligator ? "Fatigue: Alligator cracking detected" : "Fatigue: Sound surface";
+      fatigueStatusText.className = m.is_fatigue_alligator ? "text-[11px] text-[#e5484d] mt-1" : "text-[11px] text-[#85858b] mt-1";
 
       actionRecommendationEl.textContent = m.action_recommendation;
 
@@ -304,18 +299,18 @@ document.addEventListener("DOMContentLoaded", () => {
       if (m.potholes && m.potholes.length > 0) {
         m.potholes.forEach(p => {
           const div = document.createElement("div");
-          div.className = "bg-slate-950 p-2 rounded-xl border border-slate-800/80 flex items-center justify-between";
+          div.className = "panel-raised p-2.5 flex items-center justify-between text-xs";
           div.innerHTML = `
             <div>
-              <span class="font-bold text-white">#${p.id} [${p.severity}]</span>
-              <span class="text-[10px] text-slate-400 block">${p.approx_size_cm}</span>
+              <span class="font-medium text-[#ededed]">Pothole #${p.id}</span>
+              <span class="text-[11px] text-[#85858b] block font-mono mt-0.5">${p.approx_size_cm} · ${p.severity}</span>
             </div>
-            <span class="font-mono text-amber-400 font-semibold">${p.area_px.toLocaleString()} px²</span>
+            <span class="font-mono tabular-nums text-xs text-[#ededed]">${p.area_px.toLocaleString()} px²</span>
           `;
           potholeListEl.appendChild(div);
         });
       } else {
-        potholeListEl.innerHTML = `<div class="p-4 text-center text-slate-500 italic text-xs">No deep pothole cavities detected on this pavement surface.</div>`;
+        potholeListEl.innerHTML = `<div class="p-4 text-center text-[#85858b] text-xs">No pothole cavities detected on this pavement surface</div>`;
       }
 
       // Update 6-Stage Intermediate Inspector
@@ -330,7 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } catch (err) {
       console.error(err);
-      alert("Inspection Request Failed: " + err.message);
+      alert("Inspection request failed: " + err.message);
     } finally {
       scanLoading.classList.add("hidden");
     }

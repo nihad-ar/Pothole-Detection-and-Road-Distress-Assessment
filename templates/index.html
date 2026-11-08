@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoadScan AI | Pavement Distress & Pothole Assessment System</title>
+  <title>RoadScan AI — Pavement Distress & Pothole Assessment</title>
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -12,11 +12,18 @@
       theme: {
         extend: {
           colors: {
-            asphalt: {
-              800: '#1e242b',
-              900: '#14181d',
-              950: '#0c0f12',
+            graphite: {
+              950: '#0f0f10',
+              900: '#141415',
+              850: '#19191b',
+              800: '#232325',
+              700: '#2e2e32',
+              600: '#3f3f46'
             }
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace']
           }
         }
       }
@@ -26,147 +33,142 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased">
+<body class="min-h-screen flex flex-col antialiased">
 
   <!-- Header -->
-  <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-6 py-3.5 flex items-center justify-between">
-    <div class="flex items-center space-x-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-orange-600 to-red-600 flex items-center justify-center shadow-lg shadow-orange-500/20 text-white font-bold">
-        <i data-lucide="shield-alert" class="w-6 h-6"></i>
+  <header class="bg-[#141415]/95 backdrop-blur border-b border-white/[0.08] sticky top-0 z-50 px-6 py-3.5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-md bg-[#232325] border border-white/[0.08] flex items-center justify-center text-[#ededed]">
+        <i data-lucide="crosshair" class="w-4 h-4"></i>
       </div>
-      <div>
-        <div class="flex items-center space-x-2">
-          <h1 class="text-lg font-bold tracking-tight text-white">RoadScan AI</h1>
-          <span class="px-2 py-0.5 text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full">CV Mini-Project</span>
-          <span id="datasetSourceBadge" class="px-2.5 py-0.5 text-xs font-medium bg-slate-800 text-teal-300 rounded-full border border-teal-500/30">Folder: Input Images/ (Loading...)</span>
-        </div>
-        <p class="text-xs text-slate-400">Automated Pavement Distress, Crack Network & Pothole Assessment</p>
+      <div class="flex items-baseline gap-2.5">
+        <h1 class="text-sm font-medium tracking-tight text-[#ededed]">RoadScan AI</h1>
+        <span class="text-xs text-[#85858b]">Pavement distress assessment</span>
+        <span id="datasetSourceBadge" class="tech-tag font-mono">Input Images/</span>
       </div>
     </div>
 
     <!-- Actions -->
-    <div class="flex items-center space-x-3">
-      <button id="rescanFolderBtn" class="flex items-center space-x-1 px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition" title="Rescan Input Images folder">
-        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-        <span>Rescan Folder</span>
+    <div class="flex items-center gap-2">
+      <button id="rescanFolderBtn" class="btn-secondary" title="Rescan folder for newly added photos">
+        <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-[#85858b]"></i>
+        <span>Rescan</span>
       </button>
-      <button id="webcamBtn" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition">
-        <i data-lucide="camera" class="w-3.5 h-3.5"></i>
-        <span>Live Camera</span>
+      <button id="webcamBtn" class="btn-secondary">
+        <i data-lucide="camera" class="w-3.5 h-3.5 text-[#85858b]"></i>
+        <span>Camera</span>
       </button>
-      <label for="imageUpload" class="cursor-pointer flex items-center space-x-1.5 px-3.5 py-1.5 text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white rounded-lg shadow-md shadow-amber-600/20 transition">
+      <label for="imageUpload" class="btn-primary cursor-pointer">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-        <span>Upload Road Photo</span>
+        <span>Upload photo</span>
       </label>
       <input type="file" id="imageUpload" accept="image/*" class="hidden">
     </div>
   </header>
 
   <!-- Main Container -->
-  <main class="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
+  <main class="flex-1 p-6 max-w-7xl w-full mx-auto space-y-5">
 
-    <!-- Dynamic Input Images Dataset Bar -->
-    <div class="bg-slate-900/70 p-3.5 rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 pl-1 flex items-center gap-1.5">
-          <i data-lucide="folder-check" class="w-3.5 h-3.5 text-amber-400"></i> Active Input Images:
+    <!-- Dataset Selection Bar -->
+    <div class="panel-card p-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-2.5">
+        <span class="text-xs text-[#85858b] flex items-center gap-1.5 pl-1">
+          <i data-lucide="folder" class="w-3.5 h-3.5 text-[#85858b]"></i>
+          <span>Sample photos:</span>
         </span>
         <!-- Featured pills container -->
-        <div id="featuredPillsContainer" class="flex flex-wrap gap-2">
+        <div id="featuredPillsContainer" class="flex flex-wrap gap-1.5">
           <!-- Injected by JS -->
         </div>
 
         <!-- Dropdown for large dataset -->
-        <div class="flex items-center gap-1.5 pl-2 border-l border-slate-800">
-          <span class="text-xs text-slate-400">Dataset:</span>
-          <select id="datasetDropdown" class="bg-slate-950 border border-slate-800 text-teal-300 rounded-xl px-2.5 py-1 text-xs focus:outline-none focus:border-amber-500">
-            <option value="">Select from Dataset...</option>
+        <div class="flex items-center gap-2 pl-2 border-l border-white/[0.08]">
+          <span class="text-xs text-[#85858b]">Dataset:</span>
+          <select id="datasetDropdown" class="select-custom font-mono">
+            <option value="">Select from dataset...</option>
           </select>
         </div>
       </div>
 
       <div class="flex items-center gap-2">
-        <button id="runScanBtn" class="px-4 py-1.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white rounded-xl text-xs font-bold shadow-md shadow-orange-600/20 flex items-center gap-1.5 transition">
-          <i data-lucide="scan-line" class="w-4 h-4"></i>
-          <span>Re-Run Inspection</span>
+        <button id="runScanBtn" class="btn-primary">
+          <i data-lucide="scan" class="w-3.5 h-3.5"></i>
+          <span>Run inspection</span>
         </button>
       </div>
     </div>
 
-    <!-- Top Assessment Metrics Panel -->
+    <!-- Key Metrics Grid -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <!-- PCI Score Card -->
-      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 flex items-center justify-between relative overflow-hidden">
-        <div>
-          <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Pavement Condition Index (PCI)</span>
-          <div class="flex items-baseline space-x-2 mt-1">
-            <span id="pciScore" class="text-3xl font-extrabold text-white">-</span>
-            <span class="text-xs text-slate-400">/ 100</span>
+      <!-- PCI Score -->
+      <div class="panel-card p-5 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-[#85858b]">Pavement condition index</span>
+          <span id="pciRatingBadge" class="tech-tag">Evaluating</span>
+        </div>
+        <div class="mt-3">
+          <div class="flex items-baseline gap-1.5">
+            <span id="pciScore" class="text-3xl font-medium font-mono tabular-nums text-[#ededed]">-</span>
+            <span class="text-xs text-[#85858b] font-mono">/ 100</span>
           </div>
-          <span id="pciRatingBadge" class="inline-block mt-2 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-800 text-slate-300">
-            Evaluating...
-          </span>
-        </div>
-        <div class="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-          <i data-lucide="gauge" class="w-7 h-7"></i>
+          <span class="text-[11px] text-[#85858b] mt-1 block">ASTM D6433 standard scale</span>
         </div>
       </div>
 
-      <!-- Potholes Detected Card -->
-      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 flex items-center justify-between">
-        <div>
-          <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Pothole Cavities</span>
-          <p id="potholeCount" class="text-2xl font-extrabold text-rose-400 mt-1">-</p>
-          <p id="potholeAreaText" class="text-xs text-slate-400 mt-1">Area: - px²</p>
+      <!-- Potholes Detected -->
+      <div class="panel-card p-5 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-[#85858b]">Potholes detected</span>
+          <span class="text-xs text-[#85858b] font-mono">Cavity mask</span>
         </div>
-        <div class="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
-          <i data-lucide="alert-octagon" class="w-7 h-7"></i>
-        </div>
-      </div>
-
-      <!-- Crack Density Card -->
-      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 flex items-center justify-between">
-        <div>
-          <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Crack Network Density</span>
-          <p id="crackDensity" class="text-2xl font-extrabold text-amber-400 mt-1">- %</p>
-          <p id="fatigueStatusText" class="text-xs text-slate-400 mt-1">Fatigue: Normal</p>
-        </div>
-        <div class="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-          <i data-lucide="git-commit" class="w-7 h-7"></i>
+        <div class="mt-3">
+          <p id="potholeCount" class="text-3xl font-medium font-mono tabular-nums text-[#ededed]">-</p>
+          <p id="potholeAreaText" class="text-[11px] text-[#85858b] font-mono mt-1">Area: - px²</p>
         </div>
       </div>
 
-      <!-- Action Recommendation Card -->
-      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 flex flex-col justify-between">
-        <div>
-          <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Maintenance Recommendation</span>
-          <p id="actionRecommendation" class="text-xs text-slate-300 font-medium leading-relaxed mt-1.5">
+      <!-- Crack Density -->
+      <div class="panel-card p-5 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-[#85858b]">Crack network density</span>
+          <span class="text-xs text-[#85858b] font-mono">Sobel-Canny</span>
+        </div>
+        <div class="mt-3">
+          <p id="crackDensity" class="text-3xl font-medium font-mono tabular-nums text-[#ededed]">- %</p>
+          <p id="fatigueStatusText" class="text-[11px] text-[#85858b] mt-1">Fatigue: Normal</p>
+        </div>
+      </div>
+
+      <!-- Recommendation -->
+      <div class="panel-card p-5 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-[#85858b]">Maintenance recommendation</span>
+          <span class="tech-tag">Work order</span>
+        </div>
+        <div class="mt-2.5">
+          <p id="actionRecommendation" class="text-xs text-[#ededed] leading-relaxed">
             Loading recommendation...
           </p>
-        </div>
-        <div class="flex items-center gap-1.5 text-[10px] text-slate-400 pt-2 border-t border-slate-800/80">
-          <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-teal-400"></i>
-          <span>Automated Work Order Generated</span>
         </div>
       </div>
     </div>
 
     <!-- Main Visual Comparison Canvas -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
 
       <!-- Left 8 Cols: Before & After Visuals -->
-      <div class="lg:col-span-8 bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4 shadow-sm">
+      <div class="lg:col-span-8 panel-card p-5 space-y-4">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
-              <i data-lucide="eye" class="w-4 h-4 text-amber-400"></i> Road Surface Diagnostic Map
+            <h2 class="text-sm font-medium text-[#ededed] flex items-center gap-2">
+              <span>Surface diagnostic map</span>
             </h2>
-            <p id="currentFileDisplay" class="text-xs text-slate-400 mt-0.5 font-mono"></p>
+            <p id="currentFileDisplay" class="text-xs text-[#85858b] mt-0.5 font-mono"></p>
           </div>
-          <div class="flex items-center space-x-2">
-            <button id="downloadAnnotatedBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg border border-slate-700 flex items-center space-x-1.5 transition">
-              <i data-lucide="download" class="w-3.5 h-3.5"></i>
-              <span>Download Diagnostic</span>
+          <div class="flex items-center gap-2">
+            <button id="downloadAnnotatedBtn" class="btn-secondary">
+              <i data-lucide="download" class="w-3.5 h-3.5 text-[#85858b]"></i>
+              <span>Download diagnostic</span>
             </button>
           </div>
         </div>
@@ -174,50 +176,44 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Input Road Image -->
           <div class="space-y-1.5">
-            <div class="flex items-center justify-between text-xs text-slate-400 px-1">
-              <span>Input Road Photo</span>
-              <span class="text-[10px] text-slate-500 font-mono">Input Images/</span>
+            <div class="flex items-center justify-between text-xs text-[#85858b] px-0.5">
+              <span>Source photo</span>
+              <span class="font-mono text-[11px]">Input Images/</span>
             </div>
-            <div class="aspect-[4/3] bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-center overflow-hidden relative">
-              <img id="rawRoadImg" src="" alt="Raw Road Pavement" class="max-h-full max-w-full object-contain">
-              <span class="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur px-2 py-0.5 rounded text-[10px] text-slate-300 border border-slate-800">
-                Source Image
-              </span>
+            <div class="aspect-[4/3] bg-[#0f0f10] rounded-lg border border-white/[0.08] flex items-center justify-center overflow-hidden relative">
+              <img id="rawRoadImg" src="" alt="Raw road pavement" class="max-h-full max-w-full object-contain">
             </div>
           </div>
 
           <!-- Diagnostic Overlay -->
           <div class="space-y-1.5">
-            <div class="flex items-center justify-between text-xs text-amber-400 font-medium px-1">
-              <span>Automated Diagnostic Overlay</span>
-              <span class="text-[10px] text-amber-500/70 font-mono">Defects Highlighted</span>
+            <div class="flex items-center justify-between text-xs text-[#ededed] px-0.5">
+              <span>Diagnostic overlay</span>
+              <span class="font-mono text-[11px] text-[#85858b]">Potholes & cracks</span>
             </div>
-            <div class="aspect-[4/3] bg-slate-950 rounded-xl border border-amber-500/30 flex items-center justify-center overflow-hidden relative">
-              <img id="annotatedRoadImg" src="" alt="Annotated Diagnostic Map" class="max-h-full max-w-full object-contain">
-              <div id="scanLoading" class="hidden absolute inset-0 bg-slate-950/75 backdrop-blur-sm flex flex-col items-center justify-center space-y-2">
-                <div class="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
-                <span class="text-xs text-amber-400 font-semibold">Running Computer Vision Inspection...</span>
+            <div class="aspect-[4/3] bg-[#0f0f10] rounded-lg border border-white/[0.08] flex items-center justify-center overflow-hidden relative">
+              <img id="annotatedRoadImg" src="" alt="Annotated diagnostic map" class="max-h-full max-w-full object-contain">
+              <div id="scanLoading" class="hidden absolute inset-0 bg-[#0f0f10]/85 backdrop-blur-sm flex flex-col items-center justify-center space-y-2">
+                <div class="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                <span class="text-xs text-[#ededed]">Running inspection...</span>
               </div>
-              <span class="absolute bottom-2 right-2 bg-amber-500/20 backdrop-blur px-2 py-0.5 rounded text-[10px] text-amber-300 border border-amber-500/30">
-                Potholes (Red) | Cracks (Yellow)
-              </span>
             </div>
           </div>
         </div>
 
         <!-- Legend -->
-        <div class="flex flex-wrap items-center gap-4 pt-2 text-xs text-slate-400 border-t border-slate-800/80">
-          <div class="flex items-center gap-1.5">
-            <span class="w-3 h-3 rounded bg-red-600 inline-block border border-red-400"></span>
-            <span>Pothole Cavity (Bounding Box + Crosshair Centroid)</span>
+        <div class="flex flex-wrap items-center gap-5 pt-3 text-xs text-[#85858b] border-t border-white/[0.06]">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-sm bg-[#e5484d] inline-block"></span>
+            <span>Pothole cavity (bounding box & centroid)</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-3 h-3 rounded bg-yellow-400 inline-block border border-yellow-200"></span>
-            <span>Crack Network (Sobel-Canny Edge Skeleton)</span>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-sm bg-[#f59e0b] inline-block"></span>
+            <span>Crack network (Sobel-Canny skeleton)</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-3 h-3 rounded bg-emerald-500 inline-block border border-emerald-300"></span>
-            <span>Sound Asphalt Surface</span>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-sm bg-[#4cc38a] inline-block"></span>
+            <span>Sound pavement surface</span>
           </div>
         </div>
       </div>
@@ -226,55 +222,54 @@
       <div class="lg:col-span-4 space-y-5">
 
         <!-- Detected Potholes List -->
-        <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-3">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-            <i data-lucide="list-ordered" class="w-4 h-4 text-amber-400"></i> Pothole Morphometry Records
-          </h3>
-          <div id="potholeList" class="space-y-2 max-h-56 overflow-y-auto pr-1 text-xs">
+        <div class="panel-card p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-medium text-[#ededed]">Pothole morphometry</h3>
+            <span class="text-[11px] text-[#85858b] font-mono">Coordinates & size</span>
+          </div>
+          <div id="potholeList" class="space-y-1.5 max-h-56 overflow-y-auto pr-0.5 text-xs">
             <!-- Injected by JS -->
           </div>
         </div>
 
         <!-- CV Sensitivity Tuner -->
-        <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4">
+        <div class="panel-card p-5 space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-              <i data-lucide="sliders" class="w-4 h-4 text-amber-400"></i> Detection Sensitivity
-            </h3>
-            <span class="text-[10px] text-slate-400">Parameter Tuning</span>
+            <h3 class="text-xs font-medium text-[#ededed]">Sensitivity parameters</h3>
+            <span class="text-[11px] text-[#85858b]">Real-time tuning</span>
           </div>
 
           <div class="space-y-3 text-xs">
             <div>
-              <div class="flex justify-between text-slate-400 mb-1">
-                <span>CLAHE Clip Limit (Local Contrast)</span>
-                <span id="val_clahe" class="text-amber-400 font-mono">2.0</span>
+              <div class="flex justify-between text-[#85858b] mb-1">
+                <span>CLAHE clip limit</span>
+                <span id="val_clahe" class="font-mono text-[#ededed]">2.0</span>
               </div>
-              <input type="range" id="param_clahe" min="1.0" max="6.0" step="0.5" value="2.0" class="w-full h-1.5 bg-slate-800 rounded cursor-pointer">
+              <input type="range" id="param_clahe" min="1.0" max="6.0" step="0.5" value="2.0">
             </div>
 
             <div>
-              <div class="flex justify-between text-slate-400 mb-1">
-                <span>Gamma Correction (Shadow Lift)</span>
-                <span id="val_gamma" class="text-amber-400 font-mono">0.7</span>
+              <div class="flex justify-between text-[#85858b] mb-1">
+                <span>Gamma correction</span>
+                <span id="val_gamma" class="font-mono text-[#ededed]">0.7</span>
               </div>
-              <input type="range" id="param_gamma" min="0.3" max="1.5" step="0.05" value="0.7" class="w-full h-1.5 bg-slate-800 rounded cursor-pointer">
+              <input type="range" id="param_gamma" min="0.3" max="1.5" step="0.05" value="0.7">
             </div>
 
             <div>
-              <div class="flex justify-between text-slate-400 mb-1">
-                <span>Canny Edge Sensitivity</span>
-                <span id="val_canny" class="text-amber-400 font-mono">60 - 180</span>
+              <div class="flex justify-between text-[#85858b] mb-1">
+                <span>Canny edge threshold</span>
+                <span id="val_canny" class="font-mono text-[#ededed]">60 - 180</span>
               </div>
-              <input type="range" id="param_canny" min="20" max="120" step="10" value="60" class="w-full h-1.5 bg-slate-800 rounded cursor-pointer">
+              <input type="range" id="param_canny" min="20" max="120" step="10" value="60">
             </div>
 
             <div>
-              <div class="flex justify-between text-slate-400 mb-1">
-                <span>Min Pothole Area (px)</span>
-                <span id="val_area" class="text-amber-400 font-mono">1500</span>
+              <div class="flex justify-between text-[#85858b] mb-1">
+                <span>Minimum pothole area</span>
+                <span id="val_area" class="font-mono text-[#ededed]">1500 px</span>
               </div>
-              <input type="range" id="param_area" min="500" max="5000" step="250" value="1500" class="w-full h-1.5 bg-slate-800 rounded cursor-pointer">
+              <input type="range" id="param_area" min="500" max="5000" step="250" value="1500">
             </div>
           </div>
         </div>
@@ -282,80 +277,78 @@
       </div>
     </div>
 
-    <!-- Interactive 6-Stage Pipeline Inspector (Crucial for Viva & Lab Connection) -->
-    <div class="bg-slate-900 rounded-2xl border border-slate-800 p-6 space-y-5">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+    <!-- 6-Stage Pipeline Inspector -->
+    <div class="panel-card p-5 space-y-4">
+      <div class="flex flex-col md:flex-row md:items-baseline justify-between gap-2 border-b border-white/[0.06] pb-3">
         <div>
-          <div class="flex items-center space-x-2">
-            <h2 class="text-base font-bold text-white">Under The Hood: 6-Stage Computer Vision Pipeline</h2>
-            <span class="px-2 py-0.5 text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full">Viva Deep Dive</span>
-          </div>
-          <p class="text-xs text-slate-400 mt-1">
-            Examine how foundational syllabus algorithms (CLAHE, Median filtering, Sobel gradients, Canny hysteresis, LBP, and Otsu) transform the road imagery step-by-step.
+          <h2 class="text-sm font-medium text-[#ededed]">6-stage computer vision pipeline</h2>
+          <p class="text-xs text-[#85858b] mt-0.5">
+            Step-by-step algorithms connecting syllabus experiments (CLAHE, median filter, Sobel, Canny, LBP, Otsu) to pavement assessment.
           </p>
         </div>
+        <span class="text-xs text-[#85858b] font-mono">CV Experiments 1-4</span>
       </div>
 
       <!-- 6-Stage Grid Cards -->
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         <!-- Stage 1 -->
-        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 space-y-1.5">
-          <div class="text-[11px] font-semibold text-slate-300">1. CLAHE Contrast</div>
-          <div class="text-[10px] text-amber-400 font-mono">Exp 4 (4.py)</div>
-          <div class="aspect-square bg-black/50 rounded-lg overflow-hidden flex items-center justify-center">
+        <div class="panel-raised p-2.5 space-y-1.5">
+          <div class="text-xs font-medium text-[#ededed]">1. CLAHE contrast</div>
+          <div class="text-[10px] text-[#85858b] font-mono">Exp 4 · 4.py</div>
+          <div class="aspect-square bg-[#0f0f10] rounded-md overflow-hidden flex items-center justify-center border border-white/[0.04]">
             <img id="stage1Img" src="" alt="CLAHE" class="max-h-full max-w-full object-contain">
           </div>
-          <p class="text-[10px] text-slate-500 leading-tight">Eliminates uneven sun glare & shadows.</p>
+          <p class="text-[11px] text-[#85858b] leading-tight">Corrects sun glare and uneven shadows.</p>
         </div>
 
         <!-- Stage 2 -->
-        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 space-y-1.5">
-          <div class="text-[11px] font-semibold text-slate-300">2. Median Filter</div>
-          <div class="text-[10px] text-amber-400 font-mono">Exp 2 (2_and_3.py)</div>
-          <div class="aspect-square bg-black/50 rounded-lg overflow-hidden flex items-center justify-center">
-            <img id="stage2Img" src="" alt="Median Denoise" class="max-h-full max-w-full object-contain">
+        <div class="panel-raised p-2.5 space-y-1.5">
+          <div class="text-xs font-medium text-[#ededed]">2. Median filter</div>
+          <div class="text-[10px] text-[#85858b] font-mono">Exp 2 · 2_and_3.py</div>
+          <div class="aspect-square bg-[#0f0f10] rounded-md overflow-hidden flex items-center justify-center border border-white/[0.04]">
+            <img id="stage2Img" src="" alt="Median filter" class="max-h-full max-w-full object-contain">
           </div>
-          <p class="text-[10px] text-slate-500 leading-tight">Removes granular gravel speckle noise.</p>
+          <p class="text-[11px] text-[#85858b] leading-tight">Removes high-frequency aggregate speckle.</p>
         </div>
 
         <!-- Stage 3 -->
-        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 space-y-1.5">
-          <div class="text-[11px] font-semibold text-slate-300">3. Sobel Magnitude</div>
-          <div class="text-[10px] text-amber-400 font-mono">Exp 2 (2_and_3.py)</div>
-          <div class="aspect-square bg-black/50 rounded-lg overflow-hidden flex items-center justify-center">
-            <img id="stage3Img" src="" alt="Sobel Gradients" class="max-h-full max-w-full object-contain">
+        <div class="panel-raised p-2.5 space-y-1.5">
+          <div class="text-xs font-medium text-[#ededed]">3. Sobel gradient</div>
+          <div class="text-[10px] text-[#85858b] font-mono">Exp 2 · 2_and_3.py</div>
+          <div class="aspect-square bg-[#0f0f10] rounded-md overflow-hidden flex items-center justify-center border border-white/[0.04]">
+            <img id="stage3Img" src="" alt="Sobel gradient" class="max-h-full max-w-full object-contain">
           </div>
-          <p class="text-[10px] text-slate-500 leading-tight">G = √(Gx² + Gy²) directional gradients.</p>
+          <p class="text-[11px] text-[#85858b] leading-tight">Directional gradients G = √(Gx² + Gy²).</p>
         </div>
 
         <!-- Stage 4 -->
-        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 space-y-1.5">
-          <div class="text-[11px] font-semibold text-slate-300">4. Canny Cracks</div>
-          <div class="text-[10px] text-amber-400 font-mono">Exp 2 (2_and_3.py)</div>
-          <div class="aspect-square bg-black/50 rounded-lg overflow-hidden flex items-center justify-center">
-            <img id="stage4Img" src="" alt="Canny Edges" class="max-h-full max-w-full object-contain">
+        <div class="panel-raised p-2.5 space-y-1.5">
+          <div class="text-xs font-medium text-[#ededed]">4. Canny cracks</div>
+          <div class="text-[10px] text-[#85858b] font-mono">Exp 2 · 2_and_3.py</div>
+          <div class="aspect-square bg-[#0f0f10] rounded-md overflow-hidden flex items-center justify-center border border-white/[0.04]">
+            <img id="stage4Img" src="" alt="Canny edges" class="max-h-full max-w-full object-contain">
           </div>
-          <p class="text-[10px] text-slate-500 leading-tight">Non-maximum suppression & length filtering.</p>
+          <p class="text-[11px] text-[#85858b] leading-tight">Hysteresis edges with contour length filtering.</p>
         </div>
 
         <!-- Stage 5 -->
-        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 space-y-1.5">
-          <div class="text-[11px] font-semibold text-slate-300">5. LBP Texture</div>
-          <div class="text-[10px] text-amber-400 font-mono">Exp 2 (2_and_3.py)</div>
-          <div class="aspect-square bg-black/50 rounded-lg overflow-hidden flex items-center justify-center">
-            <img id="stage5Img" src="" alt="LBP Texture" class="max-h-full max-w-full object-contain">
+        <div class="panel-raised p-2.5 space-y-1.5">
+          <div class="text-xs font-medium text-[#ededed]">5. LBP texture</div>
+          <div class="text-[10px] text-[#85858b] font-mono">Exp 2 · 2_and_3.py</div>
+          <div class="aspect-square bg-[#0f0f10] rounded-md overflow-hidden flex items-center justify-center border border-white/[0.04]">
+            <img id="stage5Img" src="" alt="LBP texture" class="max-h-full max-w-full object-contain">
           </div>
-          <p class="text-[10px] text-slate-500 leading-tight">Detects alligator fatigue & disintegration.</p>
+          <p class="text-[11px] text-[#85858b] leading-tight">Local Binary Patterns for alligator fatigue.</p>
         </div>
 
         <!-- Stage 6 -->
-        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 space-y-1.5">
-          <div class="text-[11px] font-semibold text-slate-300">6. Cavity Mask</div>
-          <div class="text-[10px] text-amber-400 font-mono">Exp 4 (4.py)</div>
-          <div class="aspect-square bg-black/50 rounded-lg overflow-hidden flex items-center justify-center">
-            <img id="stage6Img" src="" alt="Otsu Pothole" class="max-h-full max-w-full object-contain">
+        <div class="panel-raised p-2.5 space-y-1.5">
+          <div class="text-xs font-medium text-[#ededed]">6. Cavity mask</div>
+          <div class="text-[10px] text-[#85858b] font-mono">Exp 4 · 4.py</div>
+          <div class="aspect-square bg-[#0f0f10] rounded-md overflow-hidden flex items-center justify-center border border-white/[0.04]">
+            <img id="stage6Img" src="" alt="Cavity mask" class="max-h-full max-w-full object-contain">
           </div>
-          <p class="text-[10px] text-slate-500 leading-tight">Segments deep dark cavity depressions.</p>
+          <p class="text-[11px] text-[#85858b] leading-tight">Dynamic shadow cutoff segments deep potholes.</p>
         </div>
       </div>
     </div>
@@ -363,8 +356,8 @@
   </main>
 
   <!-- Footer -->
-  <footer class="bg-slate-900 border-t border-slate-800 px-6 py-4 text-center text-xs text-slate-500">
-    RoadScan AI: Automated Pavement Distress & Pothole Damage Assessment System | Connected to Input Images/
+  <footer class="border-t border-white/[0.06] px-6 py-4 text-center text-xs text-[#85858b]">
+    RoadScan AI · Automated pavement distress and pothole assessment system · Connected to Input Images/
   </footer>
 
   <script src="/static/js/app.js"></script>
