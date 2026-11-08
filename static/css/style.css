@@ -1,33 +1,47 @@
 /*
- * RoadScan AI - Unslopped Design System
- * Direction:
- *   Product: Automated civil infrastructure pavement distress assessment system.
- *   Character: Precise, technical, calm. Industrial-grade diagnostic instrument.
- *   World: Asphalt aggregate, surveyor levels, road core samples, zinc galvanized hardware, graphite neutrals.
- *   Moments: Road Surface Diagnostic Map & 6-Stage Computer Vision Pipeline Inspector.
- *   Signature: Technical status badge with hairline border and tabular mono coordinates/dimensions.
- * Grounded in Damir Sokolovsky's unslop methodology (CC-BY-4.0).
+ * RoadScan AI - Professional Engineering Design System
+ * Civil Infrastructure Assessment & Pothole Detection
+ * Color Palette: Deep Slate-Navy, Industrial Safety Amber, Surveyor Cyan, Semantic Emerald/Rose
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  --bg-deep: #0f0f10;
-  --bg-page: #141415;
-  --bg-card: #19191b;
-  --bg-raised: #232325;
-  --bg-hover: #2a2a2e;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(255, 255, 255, 0.16);
-  --border-focus: rgba(255, 255, 255, 0.28);
-  --text-primary: #ededed;
-  --text-secondary: #a1a1a6;
-  --text-muted: #85858b;
-  --accent: #d97706; /* Industrial amber */
-  --accent-soft: rgba(217, 119, 6, 0.12);
-  --accent-text: #f59e0b;
-  --positive: #4cc38a;
-  --negative: #e5484d;
+  --bg-deep: #070a10;
+  --bg-page: #0b101b;
+  --bg-card: #111827;
+  --bg-card-hover: #152033;
+  --bg-raised: #182338;
+  --bg-raised-hover: #1e2c45;
+
+  --border-subtle: rgba(148, 163, 184, 0.12);
+  --border-card: rgba(148, 163, 184, 0.16);
+  --border-active: rgba(148, 163, 184, 0.28);
+  --border-amber: rgba(245, 158, 11, 0.35);
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --accent-amber: #f59e0b;
+  --accent-amber-dark: #d97706;
+  --accent-amber-soft: rgba(245, 158, 11, 0.12);
+
+  --accent-cyan: #06b6d4;
+  --accent-cyan-soft: rgba(6, 182, 212, 0.12);
+
+  --color-good: #10b981;
+  --color-good-bg: rgba(16, 185, 129, 0.12);
+  --color-good-border: rgba(16, 185, 129, 0.3);
+
+  --color-warning: #f59e0b;
+  --color-warning-bg: rgba(245, 158, 11, 0.12);
+  --color-warning-border: rgba(245, 158, 11, 0.3);
+
+  --color-danger: #f43f5e;
+  --color-danger-bg: rgba(244, 63, 94, 0.12);
+  --color-danger-border: rgba(244, 63, 94, 0.3);
+
   --radius-outer: 12px;
   --radius-inner: 8px;
   --radius-control: 6px;
@@ -52,11 +66,12 @@ body {
   font-feature-settings: "tnum" 1, "zero" 1;
 }
 
-/* Hairline panels with nested radius */
+/* Panel cards with subtle slate gradient and crisp borders */
 .panel-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  background: linear-gradient(180deg, #131d2e 0%, #0f1726 100%);
+  border: 1px solid var(--border-card);
   border-radius: var(--radius-outer);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .panel-raised {
@@ -65,59 +80,75 @@ body {
   border-radius: var(--radius-inner);
 }
 
-/* Buttons with tactile feedback and zero AI glow */
-.btn-primary {
-  background-color: #ededed;
-  color: #0f0f10;
-  font-weight: 500;
-  border: 1px solid transparent;
+/* Header Brand Icon */
+.brand-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-control);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18) 0%, rgba(217, 119, 6, 0.08) 100%);
+  border: 1px solid var(--border-amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Button styles */
+.btn-amber {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #0f172a;
+  font-weight: 600;
+  border: 1px solid rgba(245, 158, 11, 0.5);
   border-radius: var(--radius-control);
   padding: 6px 14px;
-  font-size: 13px;
-  line-height: 20px;
+  font-size: 12px;
+  line-height: 18px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  transition: opacity 120ms var(--ease-standard), transform 120ms var(--ease-standard);
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition: all 120ms var(--ease-standard);
 }
 
-.btn-primary:hover {
-  opacity: 0.92;
+.btn-amber:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
-.btn-primary:active {
+.btn-amber:active {
   transform: scale(0.98);
 }
 
-.btn-secondary {
+.btn-subtle {
   background-color: var(--bg-raised);
   color: var(--text-primary);
   border: 1px solid var(--border-subtle);
   font-weight: 500;
   border-radius: var(--radius-control);
-  padding: 6px 14px;
-  font-size: 13px;
-  line-height: 20px;
+  padding: 6px 13px;
+  font-size: 12px;
+  line-height: 18px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: background-color 120ms var(--ease-standard), border-color 120ms var(--ease-standard), transform 120ms var(--ease-standard);
+  white-space: nowrap;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: all 120ms var(--ease-standard);
 }
 
-.btn-secondary:hover {
-  background-color: var(--bg-hover);
+.btn-subtle:hover {
+  background-color: var(--bg-raised-hover);
   border-color: var(--border-active);
+  color: #ffffff;
 }
 
-.btn-secondary:active {
+.btn-subtle:active {
   transform: scale(0.98);
 }
 
-/* Sample select pills (deliberate 6px radius, no pills) */
+/* Sample pill buttons */
 .pill-item {
   background-color: var(--bg-raised);
   color: var(--text-secondary);
@@ -125,60 +156,89 @@ body {
   border-radius: var(--radius-control);
   padding: 5px 11px;
   font-size: 12px;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 16px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 120ms var(--ease-standard);
 }
 
 .pill-item:hover {
-  background-color: var(--bg-hover);
+  background-color: var(--bg-raised-hover);
   color: var(--text-primary);
   border-color: var(--border-active);
 }
 
 .pill-item.active {
-  background-color: var(--bg-hover);
-  color: var(--text-primary);
-  border-color: var(--border-focus);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background-color: var(--accent-amber-soft);
+  color: #fbbf24;
+  border-color: var(--border-amber);
+  box-shadow: 0 1px 4px rgba(245, 158, 11, 0.15), inset 0 1px 0 rgba(245, 158, 11, 0.2);
 }
 
-/* Hairline technical tags */
+/* Technical badges */
 .tech-tag {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: 4px;
   font-size: 11px;
-  line-height: 16px;
+  line-height: 15px;
   font-weight: 500;
   border: 1px solid var(--border-subtle);
   background-color: var(--bg-raised);
   color: var(--text-secondary);
 }
 
+.badge-cyan {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  line-height: 15px;
+  font-weight: 500;
+  background-color: var(--accent-cyan-soft);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  color: #38bdf8;
+}
+
+.badge-amber {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  line-height: 15px;
+  font-weight: 500;
+  background-color: var(--accent-amber-soft);
+  border: 1px solid var(--border-amber);
+  color: #fbbf24;
+}
+
 /* Status variants */
 .status-good {
-  background-color: rgba(76, 195, 138, 0.08);
-  border-color: rgba(76, 195, 138, 0.25);
-  color: #4cc38a;
+  background-color: var(--color-good-bg);
+  border-color: var(--color-good-border);
+  color: var(--color-good);
 }
 
-.status-fair {
-  background-color: rgba(217, 119, 6, 0.1);
-  border-color: rgba(217, 119, 6, 0.25);
-  color: #f59e0b;
+.status-warning {
+  background-color: var(--color-warning-bg);
+  border-color: var(--color-warning-border);
+  color: var(--color-warning);
 }
 
-.status-poor {
-  background-color: rgba(229, 72, 77, 0.1);
-  border-color: rgba(229, 72, 77, 0.25);
-  color: #e5484d;
+.status-danger {
+  background-color: var(--color-danger-bg);
+  border-color: var(--color-danger-border);
+  color: var(--color-danger);
 }
 
 /* Dropdown select */
@@ -187,25 +247,31 @@ select.select-custom {
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
   border-radius: var(--radius-control);
-  padding: 5px 10px;
+  padding: 5px 8px;
   font-size: 12px;
   line-height: 16px;
   outline: none;
+  cursor: pointer;
   transition: border-color 120ms var(--ease-standard);
 }
 
 select.select-custom:focus {
-  border-color: var(--border-focus);
+  border-color: var(--accent-amber);
 }
 
-/* Minimal industrial range slider */
+select.select-custom option {
+  background-color: #111827;
+  color: #f8fafc;
+}
+
+/* Circular Amber Thumb Range Slider */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--bg-raised);
+  height: 5px;
+  border-radius: 3px;
+  background: #182338;
   border: 1px solid var(--border-subtle);
   outline: none;
 }
@@ -213,21 +279,32 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 4px;
-  background: #ededed;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #f59e0b;
   cursor: pointer;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-  transition: transform 100ms var(--ease-standard);
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4), 0 0 6px rgba(245, 158, 11, 0.5);
+  transition: transform 100ms var(--ease-standard), box-shadow 100ms var(--ease-standard);
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.1);
+  transform: scale(1.15);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5), 0 0 10px rgba(245, 158, 11, 0.7);
 }
 
-/* Discreet scrollbar */
+input[type="range"]::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #f59e0b;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4), 0 0 6px rgba(245, 158, 11, 0.5);
+}
+
+/* Clean discreet scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -238,10 +315,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--bg-raised);
+  background: #1e2c45;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--bg-hover);
+  background: #2a3d5e;
 }

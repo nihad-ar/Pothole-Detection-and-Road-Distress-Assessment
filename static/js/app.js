@@ -1,4 +1,4 @@
-// RoadScan AI - Client Controller (Unslopped Industrial System)
+// RoadScan AI - Professional Engineering Client Controller
 document.addEventListener("DOMContentLoaded", () => {
   if (window.lucide) {
     window.lucide.createIcons();
@@ -25,13 +25,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const datasetSourceBadge = document.getElementById("datasetSourceBadge");
   const rescanFolderBtn = document.getElementById("rescanFolderBtn");
 
+  // Metrics
   const pciScoreEl = document.getElementById("pciScore");
   const pciRatingBadge = document.getElementById("pciRatingBadge");
+  const pciSubStatus = document.getElementById("pciSubStatus");
+
   const potholeCountEl = document.getElementById("potholeCount");
   const potholeAreaText = document.getElementById("potholeAreaText");
+  const potholePctText = document.getElementById("potholePctText");
+
   const crackDensityEl = document.getElementById("crackDensity");
   const fatigueStatusText = document.getElementById("fatigueStatusText");
-  const actionRecommendationEl = document.getElementById("actionRecommendation");
+
+  const actionHeadline = document.getElementById("actionHeadline");
+  const actionPriority = document.getElementById("actionPriority");
   const potholeListEl = document.getElementById("potholeList");
 
   // Pipeline Stages
@@ -81,11 +88,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Rescan Folder Button
   rescanFolderBtn.addEventListener("click", () => {
-    rescanFolderBtn.style.opacity = "0.6";
+    rescanFolderBtn.style.opacity = "0.5";
     loadDatasetImages().finally(() => {
       rescanFolderBtn.style.opacity = "1";
     });
   });
+
+  // Helper: Shorten sample pill labels for clean, non-overflowing UI
+  function formatSampleLabel(filename) {
+    const lower = filename.toLowerCase();
+    if (lower.includes("delhi")) return "New Delhi (Severe Potholes)";
+    if (lower.includes("bengaluru") || lower.includes("munnekollala")) return "Bengaluru (Fatigue Cracks)";
+    let clean = filename.replace(/\.[^/.]+$/, "").replace(/_/g, " ").replace(/-/g, " ");
+    return clean.length > 25 ? clean.substring(0, 22) + "..." : clean;
+  }
 
   // Load and render images from Input Images folder
   async function loadDatasetImages() {
@@ -105,8 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const isActive = (state.currentSample === img.filename) || (!state.currentSample && idx === 0);
         btn.className = isActive ? "pill-item active" : "pill-item";
         btn.dataset.sample = img.filename;
-        // Clean text label, no emoji slop
-        btn.innerHTML = `<span>${img.label}</span>`;
+        btn.textContent = formatSampleLabel(img.filename);
 
         btn.addEventListener("click", () => {
           document.querySelectorAll(".pill-item").forEach(p => p.classList.remove("active"));
@@ -131,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
       datasetSamples.forEach(img => {
         const opt = document.createElement("option");
         opt.value = img.filename;
-        opt.textContent = img.filename;
+        opt.textContent = img.filename.length > 30 ? img.filename.substring(0, 28) + "..." : img.filename;
         datasetDropdown.appendChild(opt);
       });
 
@@ -191,22 +206,22 @@ document.addEventListener("DOMContentLoaded", () => {
       video.play();
 
       const modal = document.createElement("div");
-      modal.className = "fixed inset-0 bg-[#0f0f10]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4";
+      modal.className = "fixed inset-0 bg-[#070a10]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4";
       modal.innerHTML = `
-        <div class="panel-card p-6 space-y-4 max-w-lg w-full">
+        <div class="panel-card p-6 space-y-4 max-w-lg w-full border border-slate-700">
           <div class="flex items-center justify-between">
-            <h3 class="text-sm font-medium text-[#ededed] flex items-center gap-2">
-              <i data-lucide="camera" class="w-4 h-4 text-[#85858b]"></i>
-              <span>Capture road pavement photo</span>
+            <h3 class="text-sm font-semibold text-slate-100 flex items-center gap-2">
+              <i data-lucide="camera" class="w-4 h-4 text-amber-400"></i>
+              <span>Capture Road Pavement Photo</span>
             </h3>
-            <button id="closeWebcamX" class="text-[#85858b] hover:text-[#ededed]">
+            <button id="closeWebcamX" class="text-slate-400 hover:text-slate-200">
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>
           </div>
-          <div id="videoContainer" class="aspect-video bg-[#0f0f10] rounded-lg overflow-hidden flex items-center justify-center border border-white/[0.08]"></div>
+          <div id="videoContainer" class="aspect-video bg-[#070a10] rounded-lg overflow-hidden flex items-center justify-center border border-slate-700"></div>
           <div class="flex justify-end gap-2 pt-2">
-            <button id="cancelWebcam" class="btn-secondary">Cancel</button>
-            <button id="snapWebcam" class="btn-primary">Capture & inspect</button>
+            <button id="cancelWebcam" class="btn-subtle">Cancel</button>
+            <button id="snapWebcam" class="btn-amber">Capture & Inspect</button>
           </div>
         </div>
       `;
@@ -275,42 +290,79 @@ document.addEventListener("DOMContentLoaded", () => {
       const m = data.metrics;
       pciScoreEl.textContent = m.pci_score;
 
-      // Rating badge styling with unslopped status classes
-      pciRatingBadge.textContent = m.condition_rating;
+      // Rating badge styling with punchy status classes
       if (m.pci_score >= 85) {
         pciRatingBadge.className = "tech-tag status-good";
+        pciRatingBadge.textContent = "Good";
+        pciSubStatus.textContent = "Minimal Distress";
+        pciSubStatus.className = "font-medium text-emerald-400 font-mono";
       } else if (m.pci_score >= 60) {
-        pciRatingBadge.className = "tech-tag status-fair";
+        pciRatingBadge.className = "tech-tag status-warning";
+        pciRatingBadge.textContent = "Fair";
+        pciSubStatus.textContent = "Moderate Wear";
+        pciSubStatus.className = "font-medium text-amber-400 font-mono";
+      } else if (m.pci_score >= 40) {
+        pciRatingBadge.className = "tech-tag status-warning";
+        pciRatingBadge.textContent = "Poor";
+        pciSubStatus.textContent = "Structural Cracking";
+        pciSubStatus.className = "font-medium text-amber-500 font-mono";
       } else {
-        pciRatingBadge.className = "tech-tag status-poor";
+        pciRatingBadge.className = "tech-tag status-danger";
+        pciRatingBadge.textContent = "Critical";
+        pciSubStatus.textContent = "Immediate Repair Required";
+        pciSubStatus.className = "font-medium text-rose-400 font-mono";
       }
 
       potholeCountEl.textContent = m.pothole_count;
-      potholeAreaText.textContent = `Area: ${m.total_pothole_area_px.toLocaleString()} px² (${m.pothole_coverage_pct}%)`;
+      potholeAreaText.textContent = `Area: ${m.total_pothole_area_px.toLocaleString()} px²`;
+      potholePctText.textContent = `${m.pothole_coverage_pct}% surface`;
 
       crackDensityEl.textContent = `${m.crack_density_pct} %`;
-      fatigueStatusText.textContent = m.is_fatigue_alligator ? "Fatigue: Alligator cracking detected" : "Fatigue: Sound surface";
-      fatigueStatusText.className = m.is_fatigue_alligator ? "text-[11px] text-[#e5484d] mt-1" : "text-[11px] text-[#85858b] mt-1";
+      if (m.is_fatigue_alligator) {
+        fatigueStatusText.textContent = "Alligator Fatigue Detected";
+        fatigueStatusText.className = "text-[11px] text-rose-400 font-semibold";
+      } else {
+        fatigueStatusText.textContent = "Surface Sound / Intact";
+        fatigueStatusText.className = "text-[11px] text-emerald-400 font-medium";
+      }
 
-      actionRecommendationEl.textContent = m.action_recommendation;
+      // Action Work Order Headline
+      if (m.pothole_count > 0) {
+        actionHeadline.textContent = "Emergency Asphalt Patching";
+        actionPriority.textContent = "Priority: CRITICAL";
+        actionPriority.className = "font-mono text-rose-400 font-semibold";
+      } else if (m.is_fatigue_alligator) {
+        actionHeadline.textContent = "Mill & Resurface Overlay";
+        actionPriority.textContent = "Priority: HIGH";
+        actionPriority.className = "font-mono text-amber-400 font-semibold";
+      } else if (m.pci_score < 80) {
+        actionHeadline.textContent = "Crack Sealing & Joint Repair";
+        actionPriority.textContent = "Priority: MEDIUM";
+        actionPriority.className = "font-mono text-amber-300 font-semibold";
+      } else {
+        actionHeadline.textContent = "Routine Inspection / Monitor";
+        actionPriority.textContent = "Priority: LOW";
+        actionPriority.className = "font-mono text-emerald-400 font-semibold";
+      }
 
       // Update Potholes List
       potholeListEl.innerHTML = "";
       if (m.potholes && m.potholes.length > 0) {
         m.potholes.forEach(p => {
           const div = document.createElement("div");
-          div.className = "panel-raised p-2.5 flex items-center justify-between text-xs";
+          div.className = "panel-raised p-2 flex items-center justify-between text-xs border border-slate-700/60";
+          const sevColor = p.severity === "Severe" ? "text-rose-400" : "text-amber-400";
           div.innerHTML = `
             <div>
-              <span class="font-medium text-[#ededed]">Pothole #${p.id}</span>
-              <span class="text-[11px] text-[#85858b] block font-mono mt-0.5">${p.approx_size_cm} · ${p.severity}</span>
+              <span class="font-semibold text-slate-100">Pothole #${p.id}</span>
+              <span class="text-[11px] text-slate-400 block font-mono mt-0.5">${p.approx_size_cm} · <span class="${sevColor} font-medium">${p.severity}</span></span>
             </div>
-            <span class="font-mono tabular-nums text-xs text-[#ededed]">${p.area_px.toLocaleString()} px²</span>
+            <span class="font-mono tabular-nums text-xs text-amber-400 font-semibold">${p.area_px.toLocaleString()} px²</span>
           `;
           potholeListEl.appendChild(div);
         });
       } else {
-        potholeListEl.innerHTML = `<div class="p-4 text-center text-[#85858b] text-xs">No pothole cavities detected on this pavement surface</div>`;
+        potholeListEl.innerHTML = `<div class="p-4 text-center text-slate-400 text-xs">No pothole cavities detected on this pavement surface</div>`;
       }
 
       // Update 6-Stage Intermediate Inspector
